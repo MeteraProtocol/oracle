@@ -1,0 +1,37 @@
+name: Deploy Oracle to GitHub Pages
+
+on:
+    push:
+        branches:
+            - main # Trigger on pushes to the main branch
+
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up nodejs
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+
+            - run: sudo apt-get install -y google-android-platform-33-installer google-android-build-tools-33.0.1-installer
+            - run: npm install -C ./pwa
+            - run: ./build.sh
+
+            - name: Upload artifacts
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: "./dist"
+
+            - name: Deploy page
+              id: deployment
+              uses: actions/deploy-pages@v4
